@@ -1,34 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import KanbanColumn from './KanbanColumn';
 import ModalNewTask from './ModalNewTask.jsx';
 import TeamChat from './TeamChat.jsx';
 
-const KanbanBoard = () => {
-    const [columns, setColumns] = useState({
-        'Created': [
-            { id: '1', title: 'Создать компонент навигации', description: 'Разработать компонент для верхней панели навигации.', assignee: 'Иван Иванов', dueDate: '2025-05-25', priority: 'High' },
-            { id: '2', title: 'Настроить базу данных Prisma', description: 'Завершить схему Prisma и настроить миграции.', assignee: 'Петр Петров', dueDate: '2025-05-28', priority: 'Medium' },
-        ],
-        'In Progress': [
-            { id: '3', title: 'Разработать форму регистрации', description: 'Реализовать UI и логику для формы регистрации.', assignee: 'Иван Иванов', dueDate: '2025-05-26', priority: 'High' },
-        ],
-        'Review': [
-            { id: '4', title: 'Проверить логику аутентификации', description: 'Провести тесты для эндпоинтов входа и регистрации.', assignee: 'Мария Сидорова', dueDate: '2025-05-27', priority: 'Medium' },
-        ],
-        'Done': [
-            { id: '5', title: 'Настроить проект React + Vite', description: 'Базовая настройка фронтенда завершена.', assignee: 'Петр Петров', dueDate: '2025-05-20', priority: 'Low' },
-        ],
-    });
+const WS_URL = 'ws://localhost:5000';
 
+const KanbanBoard = () => {
+    const [columns, setColumns] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedColumn, setSelectedColumn] = useState(null);
-
     const [draggedTask, setDraggedTask] = useState(null);
     const [sourceColumnTitle, setSourceColumnTitle] = useState(null);
 
+    const ws = useRef(null);
+    const currentUser = "const username";
 
-    const currentUser = "ВашеИмяПользователя";
 
+    const [chatMessages, setChatMessages] = useState([]);
+
+
+    useEffect(() => {
+        ws.current = new WebSocket(WS_URL);
+
+        ws.current.onopen = () => {
+            console.log('Connected to WebSocket server for Kanban updates.');
+        };
+
+        ws.current.onmessage = (event) => {
+            try {
+                const message = JSON.parse(event.data);
+                if (message.type === 'kanban_update') {
+                    console.log('Received kanban update:', message.payload);
+                    setColumns(message.payload);
+                } else if (message.type === 'message') {
+                    console.log('Received chat message (in KanbanBoard):', message);
+                    setChatMessages((prevMessages) => [...prevMessages, message]);
+                }
+            } catch (error) {
+                console.error('Error parsing WebSocket message:', error, event.data);
+            }
+        };
+
+        ws.current.onclose = () => {
+            console.log('Disconnected from WebSocket server.');
+        };
+
+        ws.current.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        return () => {
+            if (ws.current) {
+                ws.current.close();
+            }
+        };
+    }, []);
 
     const handleOpenAddTaskModal = (columnTitle) => {
         setSelectedColumn(columnTitle);
@@ -43,22 +69,23 @@ const KanbanBoard = () => {
     const handleSubmitNewTask = (newTaskData) => {
         if (!newTaskData.title) return;
 
-        const newTaskId = String(Date.now());
-        const newTask = {
-            id: newTaskId,
-            title: newTaskData.title,
-            description: newTaskData.description || 'Нет описания',
-            assignee: newTaskData.assignee || 'Не назначен',
-            dueDate: newTaskData.dueDate || '',
-            priority: newTaskData.priority || 'Low',
-        };
-
-        setColumns(prevColumns => ({
-            ...prevColumns,
-            [selectedColumn]: [...(prevColumns[selectedColumn] || []), newTask]
-        }));
-
-        console.log("Добавлена новая задача:", newTask, "в столбец:", selectedColumn);
+        if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+            ws.current.send(JSON.stringify({
+                type: 'kanban_action',
+                action: 'add_task',
+                payload: {
+                    column: selectedColumn,
+                    task: {
+                        title: newTaskData.title,
+                        description: newTaskData.description || 'Нет описания',
+                        assignee: newTaskData.assignee || 'Не назначен',
+                        dueDate: newTaskData.dueDate || '',
+                        priority: newTaskData.priority || 'Low',
+                    },
+                    user: currentUser
+                }
+            }));
+        }
         handleCloseAddTaskModal();
     };
 
@@ -74,25 +101,21 @@ const KanbanBoard = () => {
             return;
         }
 
-        setColumns(prevColumns => {
-            const newColumns = { ...prevColumns };
-            const taskToMove = newColumns[sourceColumnTitle].find(task => task.id === droppedTaskId);
-            if (!taskToMove) {
-                return prevColumns;
-            }
-
-            newColumns[sourceColumnTitle] = newColumns[sourceColumnTitle].filter(
-                task => task.id !== droppedTaskId
-            );
-            newColumns[targetColumnTitle] = [...(newColumns[targetColumnTitle] || []), taskToMove];
-
-            return newColumns;
-        });
+        if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+            ws.current.send(JSON.stringify({
+                type: 'kanban_action',
+                action: 'move_task',
+                payload: {
+                    taskId: droppedTaskId,
+                    sourceColumn: sourceColumnTitle,
+                    targetColumn: targetColumnTitle,
+                    user: currentUser
+                }
+            }));
+        }
 
         setDraggedTask(null);
         setSourceColumnTitle(null);
-
-        console.log(`Задача "${draggedTask.title}" (ID: ${droppedTaskId}) перемещена из "${sourceColumnTitle}" в "${targetColumnTitle}"`);
     };
 
     return (
@@ -116,9 +139,12 @@ const KanbanBoard = () => {
                 onSubmit={handleSubmitNewTask}
             />
 
-
             <div className="p-6">
-                <TeamChat currentUser={currentUser} />
+                <TeamChat
+                    currentUser={currentUser}
+                    ws={ws.current}
+                    messages={chatMessages}
+                />
             </div>
         </div>
     );

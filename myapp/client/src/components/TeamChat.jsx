@@ -1,55 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react'
 
-const WS_URL = 'ws://localhost:8080';
+const TeamChat = ({ currentUser, ws, messages }) => {
+    const [inputValue, setInputValue] = useState('')
 
-const TeamChat = ({ currentUser }) => {
-    const [messages, setMessages] = useState([]);
-    const [inputValue, setInputValue] = useState('');
-    const ws = useRef(null);
-
-
-    const messagesEndRef = useRef(null);
+    const messagesEndRef = useRef(null)
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     };
-
-    useEffect(() => {
-        ws.current = new WebSocket(WS_URL);
-
-        ws.current.onopen = () => {
-            console.log('Подключено к WebSocket серверу');
-            ws.current.send(JSON.stringify({
-                type: 'message',
-                user: 'Система',
-                text: `${currentUser} подключился к чату.`,
-                timestamp: new Date().toLocaleTimeString()
-            }));
-        };
-
-        ws.current.onmessage = (event) => {
-            try {
-                const message = JSON.parse(event.data);
-                setMessages((prevMessages) => [...prevMessages, message]);
-            } catch (error) {
-                console.error('Ошибка парсинга входящего сообщения:', error, event.data);
-            }
-        };
-
-        ws.current.onclose = () => {
-            console.log('Отключено от WebSocket сервера');
-        };
-
-        ws.current.onerror = (error) => {
-            console.error('Ошибка WebSocket:', error);
-        };
-
-        return () => {
-            if (ws.current) {
-                ws.current.close();
-            }
-        };
-    }, []);
 
     useEffect(() => {
         scrollToBottom();
@@ -57,14 +15,14 @@ const TeamChat = ({ currentUser }) => {
 
     const handleSendMessage = (e) => {
         e.preventDefault();
-        if (inputValue.trim() && ws.current && ws.current.readyState === WebSocket.OPEN) {
+        if (inputValue.trim() && ws && ws.readyState === WebSocket.OPEN) {
             const message = {
                 type: 'message',
                 user: currentUser || 'Аноним',
                 text: inputValue.trim(),
             };
-            ws.current.send(JSON.stringify(message));
-            setInputValue('');
+            ws.send(JSON.stringify(message))
+            setInputValue('')
         }
     };
 

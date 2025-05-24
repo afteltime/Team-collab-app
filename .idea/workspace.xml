@@ -4,20 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8d303c93-a20f-4fb5-86b2-b62d122cb53d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/myapp/client/src/components/KanbanBoard.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/myapp/client/src/components/KanbanCard.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/myapp/client/src/components/KanbanColumn.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/myapp/client/src/components/ModalNewTask.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/myapp/client/src/components/TeamChat.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/myapp/server/services/websocketServer.js" afterDir="false" />
+    <list default="true" id="8d303c93-a20f-4fb5-86b2-b62d122cb53d" name="Changes" comment="wsocket, kanbanboard, drag and drop">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myapp/client/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/myapp/client/src/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myapp/client/src/components/Canban-board.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/myapp/client/src/components/Badges.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myapp/client/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/myapp/client/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myapp/server/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/myapp/server/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myapp/server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/myapp/server/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/myapp/server/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/myapp/server/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myapp/client/src/components/KanbanBoard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/myapp/client/src/components/KanbanBoard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myapp/client/src/components/TeamChat.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/myapp/client/src/components/TeamChat.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/myapp/server/services/websocketServer.js" beforeDir="false" afterPath="$PROJECT_DIR$/myapp/server/services/websocketServer.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,8 +113,17 @@
       <workItem from="1747997802719" duration="1309000" />
       <workItem from="1748048129758" duration="9000" />
       <workItem from="1748051583482" duration="1098000" />
-      <workItem from="1748058764953" duration="3037000" />
+      <workItem from="1748058764953" duration="11783000" />
     </task>
+    <task id="LOCAL-00001" summary="wsocket, kanbanboard, drag and drop">
+      <option name="closed" value="true" />
+      <created>1748062087066</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1748062087066</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -134,5 +134,9 @@
     <option featureType="dependencySupport" implementationName="javascript:npm:tailwindcss" />
     <option featureType="dependencySupport" implementationName="javascript:npm:vite" />
     <option featureType="dependencySupport" implementationName="javascript:npm:postcss" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="wsocket, kanbanboard, drag and drop" />
+    <option name="LAST_COMMIT_MESSAGE" value="wsocket, kanbanboard, drag and drop" />
   </component>
 </project>
