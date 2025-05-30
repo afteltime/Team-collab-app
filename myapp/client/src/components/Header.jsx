@@ -14,6 +14,9 @@ function Header() {
                 <Link to='/contact' className='text-xl text-white font-medium hover:scale-105'>
                     Contact
                 </Link>
+                <Link to='/kanban' className='text-xl text-white font-medium hover:scale-105'>
+                    Kanban
+                </Link>
             </nav>
         </header>
     );
